@@ -3,8 +3,8 @@ name: Build & Release FocusTimer
 on:
   push:
     tags:
-      - 'v*'        # 只有推送形如 v1.0.0 的 tag 才会触发
-  workflow_dispatch: # 也允许你在 GitHub 界面手动点运行
+      - "v*"              # 推送 tag 才触发，如 v1.0.0
+  workflow_dispatch:      # 也允许你手动运行
 
 jobs:
   build:
@@ -21,19 +21,25 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install
-      
+
       - name: Build with electron-builder
-      shell: bash
-      run: |
-        if [ "$RUNNER_OS" = "macOS" ]; then
-          npx electron-builder --mac
-        elif [ "$RUNNER_OS" = "Windows" ]; then
-          npx electron-builder --win
-        else
-          npx electron-builder --linux
-        fi
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            npx electron-builder --mac
+          elif [ "$RUNNER_OS" = "Windows" ]; then
+            npx electron-builder --win
+          else
+            npx electron-builder --linux
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-${{ matrix.os }}
+          path: dist/
