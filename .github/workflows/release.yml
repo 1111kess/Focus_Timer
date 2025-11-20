@@ -26,10 +26,14 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-
+      
       - name: Build with electron-builder
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
-        run: |
-          npx electron-builder --$([[ "$RUNNER_OS" == "macOS" ]] && echo "mac" || ([[ "$RUNNER_OS" == "Windows" ]] && echo "win" || echo "linux"))
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" = "macOS" ]; then
+          npx electron-builder --mac
+        elif [ "$RUNNER_OS" = "Windows" ]; then
+          npx electron-builder --win
+        else
+          npx electron-builder --linux
+        fi
